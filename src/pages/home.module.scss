@@ -1,1 +1,45 @@
-// TODO
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 1rem;
+
+  .post {
+    & + .post {
+      margin-top: 2.5rem;
+    }
+
+    h1 {
+      color: var(--heading);
+    }
+    p {
+      margin-top: 0.5rem;
+      color: var(--body);
+    }
+
+    .info {
+      display: flex;
+      align-items: center;
+      color: var(--info);
+
+      div {
+        display: flex;
+        align-items: center;
+        margin-top: 1rem;
+        & + div {
+          margin-left: 1.5rem;
+        }
+      }
+
+      span {
+        margin-left: 0.5rem;
+      }
+    }
+  }
+
+  button {
+    border: none;
+    background: none;
+    color: var(--highlight);
+    margin-top: 4.5rem;
+  }
+}
