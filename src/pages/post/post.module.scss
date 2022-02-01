@@ -1,1 +1,29 @@
-// TODO
+.container {
+  max-width: 100vw;
+  img {
+    width: 100%;
+  }
+
+  .article {
+    margin-top: 3rem;
+
+    h1 {
+      font-size: 2.5rem;
+    }
+  }
+
+  .content {
+    margin-bottom: 3rem;
+
+    .paragraph {
+      h2 {
+        margin: 2.5rem 0;
+      }
+
+      p {
+        margin: 1rem 0;
+        text-align: justify;
+      }
+    }
+  }
+}

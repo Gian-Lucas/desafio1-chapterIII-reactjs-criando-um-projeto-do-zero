@@ -1,0 +1,25 @@
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.info {
+  display: flex;
+  align-items: center;
+  color: var(--info);
+  font-size: 0.9rem;
+
+  div {
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+    & + div {
+      margin-left: 1.5rem;
+    }
+  }
+
+  span {
+    margin-left: 0.5rem;
+  }
+}

@@ -1,45 +1,31 @@
-.container {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 0 1rem;
+.logo {
+  margin: 3rem 0;
+}
 
-  .post {
-    & + .post {
-      margin-top: 2.5rem;
-    }
-
-    h1 {
-      color: var(--heading);
-    }
-    p {
-      margin-top: 0.5rem;
-      color: var(--body);
-    }
-
-    .info {
-      display: flex;
-      align-items: center;
-      color: var(--info);
-
-      div {
-        display: flex;
-        align-items: center;
-        margin-top: 1rem;
-        & + div {
-          margin-left: 1.5rem;
-        }
-      }
-
-      span {
-        margin-left: 0.5rem;
-      }
-    }
+.post {
+  & + .post {
+    margin-top: 2.5rem;
   }
 
-  button {
-    border: none;
-    background: none;
-    color: var(--highlight);
-    margin-top: 4.5rem;
+  a {
+    color: var(--heading);
+    transition: color 0.3s;
+    font-weight: bold;
+    font-size: 2rem;
+
+    &:hover {
+      color: var(--highlight);
+    }
   }
+  p {
+    margin-top: 0.5rem;
+    color: var(--body);
+  }
+}
+
+.buttonLoadMore {
+  border: none;
+  background: none;
+  color: var(--highlight);
+  margin-top: 4.5rem;
 }

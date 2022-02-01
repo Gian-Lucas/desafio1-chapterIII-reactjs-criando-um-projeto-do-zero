@@ -9,6 +9,7 @@ import { getPrismicClient } from '../services/prismic';
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
 import { useState } from 'react';
+import Link from 'next/link';
 
 interface Post {
   uid?: string;
@@ -60,19 +61,22 @@ export default function Home(postsPagination: HomeProps) {
 
   return (
     <>
-      <div className={styles.container}>
+      <div className={commonStyles.container}>
+        <img src="./logo.svg" alt="logo" className={styles.logo} />
         {posts.map(post => {
           return (
             <div className={styles.post} key={post.uid}>
-              <h1>{post.data.title}</h1>
+              <Link href={`/post/${post.uid}`}>
+                <a>{post.data.title}</a>
+              </Link>
               <p>{post.data.subtitle}</p>
 
-              <div className={styles.info}>
+              <div className={commonStyles.info}>
                 <div>
                   <FiCalendar />
                   <span>{post.first_publication_date}</span>
                 </div>
-                <div className={styles.info}>
+                <div>
                   <FiUser />
                   <span>{post.data.author}</span>
                 </div>
@@ -82,7 +86,12 @@ export default function Home(postsPagination: HomeProps) {
         })}
 
         {nextPage ? (
-          <button onClick={handleLoadMorePosts}>Carregar mais posts</button>
+          <button
+            className={styles.buttonLoadMore}
+            onClick={handleLoadMorePosts}
+          >
+            Carregar mais posts
+          </button>
         ) : (
           ''
         )}
