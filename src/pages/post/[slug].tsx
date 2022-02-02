@@ -2,6 +2,8 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { RichText } from 'prismic-dom';
+import Prismic from '@prismicio/client';
+
 import { FiCalendar, FiUser, FiClock } from 'react-icons/fi';
 
 import Header from '../../components/Header';
@@ -10,6 +12,7 @@ import { getPrismicClient } from '../../services/prismic';
 
 import commonStyles from '../../styles/common.module.scss';
 import styles from './post.module.scss';
+import { useRouter } from 'next/router';
 
 interface Post {
   first_publication_date: string | null;
@@ -33,10 +36,25 @@ interface PostProps {
 }
 
 export default function Post({ post }: PostProps) {
+  const router = useRouter();
+
+  if (router.isFallback) {
+    return <h2>Carregando...</h2>;
+  }
+
   const { first_publication_date } = post;
   const { author, banner, content, title } = post.data;
 
-  console.log(content);
+  const estimatedReading =
+    content.reduce((quantityWords, contentActual) => {
+      const headingWords = contentActual.heading.split(' ').length;
+      const bodyWords = RichText.asText(contentActual.body).split(' ').length;
+
+      const totalWords = headingWords + bodyWords;
+
+      return (quantityWords += totalWords);
+    }, 0) / 200;
+
   return (
     <>
       <Header />
@@ -48,7 +66,11 @@ export default function Post({ post }: PostProps) {
           <div className={commonStyles.info}>
             <div>
               <FiCalendar />
-              <span>{first_publication_date}</span>
+              <span>
+                {format(new Date(first_publication_date), 'PP', {
+                  locale: ptBR,
+                })}
+              </span>
             </div>
             <div>
               <FiUser />
@@ -56,18 +78,20 @@ export default function Post({ post }: PostProps) {
             </div>
             <div>
               <FiClock />
-              <span>5 min</span>
+              <span>{Math.ceil(estimatedReading)} min</span>
             </div>
           </div>
 
           <div className={styles.content}>
             {content.map(cont => {
               return (
-                <div className={styles.paragraph}>
+                <div className={styles.paragraph} key={cont.heading}>
                   <h2>{cont.heading}</h2>
-                  {cont.body.map(text => (
-                    <p>{text}</p>
-                  ))}
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: RichText.asHtml(cont.body),
+                    }}
+                  />
                 </div>
               );
             })}
@@ -78,16 +102,27 @@ export default function Post({ post }: PostProps) {
   );
 }
 
-export const getStaticPaths = async () => {
-  //   const prismic = getPrismicClient();
-  //   const posts = await prismic.query(TODO);
+export const getStaticPaths: GetStaticPaths = async () => {
+  const prismic = getPrismicClient();
+  const posts = await prismic.query(
+    [Prismic.predicates.at('document.type', 'post')],
+    { pageSize: 2 }
+  );
+
+  const { results } = posts;
+
+  const postsSlugs = results.map(post => {
+    return {
+      params: {
+        slug: post.uid,
+      },
+    };
+  });
 
   return {
-    paths: [],
-    fallback: 'blocking', // false or true
+    paths: postsSlugs,
+    fallback: true, // false or true
   };
-
-  //   // TODO
 };
 
 export const getStaticProps: GetStaticProps = async context => {
@@ -99,18 +134,16 @@ export const getStaticProps: GetStaticProps = async context => {
   const content = res.data.content.map(c => {
     return {
       heading: c.heading,
-      body: c.body.map(t => {
-        return t.text;
-      }),
+      body: c.body,
     };
   });
 
   const post = {
-    first_publication_date: format(new Date(res.first_publication_date), 'PP', {
-      locale: ptBR,
-    }),
+    uid: res.uid,
+    first_publication_date: res.first_publication_date,
     data: {
       title: res.data.title,
+      subtitle: res.data.subtitle,
       banner: {
         url: res.data.banner.url,
       },

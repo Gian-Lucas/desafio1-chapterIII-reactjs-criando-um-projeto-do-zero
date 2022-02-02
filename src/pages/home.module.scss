@@ -7,6 +7,10 @@
     margin-top: 2.5rem;
   }
 
+  &:last-child {
+    margin-bottom: 3rem;
+  }
+
   a {
     color: var(--heading);
     transition: color 0.3s;

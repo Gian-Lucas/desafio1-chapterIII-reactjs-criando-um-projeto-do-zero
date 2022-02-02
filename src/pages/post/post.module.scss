@@ -1,5 +1,6 @@
 .container {
   max-width: 100vw;
+
   img {
     width: 100%;
   }
@@ -9,6 +10,7 @@
 
     h1 {
       font-size: 2.5rem;
+      color: var(--heading);
     }
   }
 
@@ -18,6 +20,7 @@
     .paragraph {
       h2 {
         margin: 2.5rem 0;
+        color: var(--heading);
       }
 
       p {
