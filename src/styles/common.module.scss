@@ -10,11 +10,17 @@
   color: var(--info);
   font-size: 0.9rem;
 
-  div {
+  ul {
+    list-style: none;
+  }
+
+  div,
+  li {
     display: flex;
     align-items: center;
     margin-top: 1rem;
-    & + div {
+    & + div,
+    & + li {
       margin-left: 1.5rem;
     }
   }

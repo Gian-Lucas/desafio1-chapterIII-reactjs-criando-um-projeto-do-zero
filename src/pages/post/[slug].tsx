@@ -13,8 +13,10 @@ import { getPrismicClient } from '../../services/prismic';
 import commonStyles from '../../styles/common.module.scss';
 import styles from './post.module.scss';
 import { useRouter } from 'next/router';
+import Comments from '../../components/Comments';
 
 interface Post {
+  lastModification: string | null;
   first_publication_date: string | null;
   data: {
     title: string;
@@ -42,7 +44,7 @@ export default function Post({ post }: PostProps) {
     return <h2>Carregando...</h2>;
   }
 
-  const { first_publication_date } = post;
+  const { first_publication_date, lastModification } = post;
   const { author, banner, content, title } = post.data;
 
   const estimatedReading =
@@ -55,6 +57,14 @@ export default function Post({ post }: PostProps) {
       return (quantityWords += totalWords);
     }, 0) / 200;
 
+  function formatLastModified(lastModified) {
+    const date = format(new Date(lastModified), 'PPp', {
+      locale: ptBR,
+    }).split(',');
+
+    return `* editado em ${date[0]}, às ${date[1]}`;
+  }
+
   return (
     <>
       <Header />
@@ -63,23 +73,31 @@ export default function Post({ post }: PostProps) {
 
         <article className={`${commonStyles.container} ${styles.article}`}>
           <h1>{title}</h1>
-          <div className={commonStyles.info}>
-            <div>
-              <FiCalendar />
-              <span>
-                {format(new Date(first_publication_date), 'PP', {
-                  locale: ptBR,
-                })}
-              </span>
-            </div>
-            <div>
-              <FiUser />
-              <span>{author}</span>
-            </div>
-            <div>
-              <FiClock />
-              <span>{Math.ceil(estimatedReading)} min</span>
-            </div>
+          <div>
+            <ul className={commonStyles.info}>
+              <li>
+                <FiCalendar />
+                <span>
+                  {format(new Date(first_publication_date), 'PP', {
+                    locale: ptBR,
+                  })}
+                </span>
+              </li>
+              <li>
+                <FiUser />
+                <span>{author}</span>
+              </li>
+              <li>
+                <FiClock />
+                <span>{Math.ceil(estimatedReading)} min</span>
+              </li>
+            </ul>
+
+            {lastModification && (
+              <div className={styles.lastModification}>
+                {formatLastModified(lastModification)}
+              </div>
+            )}
           </div>
 
           <div className={styles.content}>
@@ -98,6 +116,8 @@ export default function Post({ post }: PostProps) {
           </div>
         </article>
       </div>
+
+      <Comments />
     </>
   );
 }
@@ -140,6 +160,10 @@ export const getStaticProps: GetStaticProps = async context => {
 
   const post = {
     uid: res.uid,
+    lastModification:
+      res.first_publication_date == res.last_publication_date
+        ? null
+        : res.last_publication_date,
     first_publication_date: res.first_publication_date,
     data: {
       title: res.data.title,
