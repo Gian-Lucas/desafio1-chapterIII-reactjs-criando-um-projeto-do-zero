@@ -14,8 +14,11 @@ import commonStyles from '../../styles/common.module.scss';
 import styles from './post.module.scss';
 import { useRouter } from 'next/router';
 import Comments from '../../components/Comments';
+import NavigationPost from '../../components/NavigationPost';
 
 interface Post {
+  nextPost: { title: string; uid: string } | null;
+  prevPost: { title: string; uid: string } | null;
   lastModification: string | null;
   first_publication_date: string | null;
   data: {
@@ -44,7 +47,7 @@ export default function Post({ post }: PostProps) {
     return <h2>Carregando...</h2>;
   }
 
-  const { first_publication_date, lastModification } = post;
+  const { first_publication_date, lastModification, nextPost, prevPost } = post;
   const { author, banner, content, title } = post.data;
 
   const estimatedReading =
@@ -117,7 +120,10 @@ export default function Post({ post }: PostProps) {
         </article>
       </div>
 
-      <Comments />
+      <footer className={`${commonStyles.container}`}>
+        <NavigationPost nextPost={nextPost} prevPost={prevPost} />
+        <Comments />
+      </footer>
     </>
   );
 }
@@ -151,6 +157,32 @@ export const getStaticProps: GetStaticProps = async context => {
 
   const res = await prismic.getByUID('post', String(slug), {});
 
+  const nextRes = await prismic.query(
+    Prismic.Predicates.at('document.type', 'post'),
+    {
+      pageSize: 1,
+      after: res?.id,
+      orderings: '[ document.first_publication_date desc ]',
+    }
+  );
+  const prevRes = await prismic.query(
+    Prismic.Predicates.at('document.type', 'post'),
+    {
+      pageSize: 1,
+      after: res?.id,
+      orderings: '[ document.first_publication_date ]',
+    }
+  );
+
+  const nextPost =
+    nextRes.results.length === 0
+      ? null
+      : { title: nextRes.results[0].data.title, uid: nextRes.results[0].uid };
+  const prevPost =
+    prevRes.results.length === 0
+      ? null
+      : { title: prevRes.results[0].data.title, uid: prevRes.results[0].uid };
+
   const content = res.data.content.map(c => {
     return {
       heading: c.heading,
@@ -159,6 +191,8 @@ export const getStaticProps: GetStaticProps = async context => {
   });
 
   const post = {
+    nextPost,
+    prevPost,
     uid: res.uid,
     lastModification:
       res.first_publication_date == res.last_publication_date

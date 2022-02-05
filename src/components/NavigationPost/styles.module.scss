@@ -1,0 +1,32 @@
+.container {
+  display: flex;
+  align-items: flex-end;
+
+  border-top: 1px solid var(--info);
+  padding-top: 2.7rem;
+  margin-bottom: 3rem;
+
+  div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .prev {
+    align-items: flex-start;
+  }
+
+  .next {
+    align-items: flex-end;
+  }
+
+  span {
+    font-size: 1.2rem;
+    color: var(--heading);
+  }
+
+  a {
+    margin-top: 0.5rem;
+    color: var(--highlight);
+  }
+}
