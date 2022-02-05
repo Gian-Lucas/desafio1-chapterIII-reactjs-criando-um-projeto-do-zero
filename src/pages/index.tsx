@@ -65,7 +65,7 @@ export default function Home({ postsPagination }: HomeProps) {
 
   return (
     <div className={commonStyles.container}>
-      <img src="/logo.svg" alt="logo" className={styles.logo} />
+      <img src="/images/logo.svg" alt="logo" className={styles.logo} />
       {posts.map(post => {
         return (
           <div className={styles.post} key={post.uid}>
